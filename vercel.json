@@ -1,8 +1,4 @@
 {
-  "buildCommand": "cd equity-research-copilot && npm install && npm run build",
-  "outputDirectory": "equity-research-copilot/.next",
-  "installCommand": "cd equity-research-copilot && npm install",
-  "framework": "nextjs",
   "rootDirectory": "equity-research-copilot"
 }
 
