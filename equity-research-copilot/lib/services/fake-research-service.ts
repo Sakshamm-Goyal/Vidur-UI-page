@@ -282,12 +282,54 @@ class FakeResearchService {
     }
   }
 
+  private generateDeterministicRunId(query: string, ticker: string, deep: boolean): string {
+    // Create a deterministic hash from query, ticker, and deep flag
+    const seed = `${query}|${ticker}|${deep}`.trim().toLowerCase();
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      const char = seed.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash | 0; // Convert to 32-bit signed integer
+    }
+    // Convert to positive number and format as RUN-XXXXX
+    const runNumber = Math.abs(hash) % 99999;
+    return `RUN-${runNumber.toString().padStart(5, "0")}`;
+  }
+
+  private findExistingRun(query: string, ticker: string, deep: boolean): ResearchRun | null {
+    const normalizedTicker = ticker || this.inferTickerFromQuery(query) || "TATAMOTORS.NS";
+    // First try to find by deterministic ID
+    const deterministicId = this.generateDeterministicRunId(query, normalizedTicker, deep);
+    const existingRun = this.runs.get(deterministicId);
+    if (existingRun && 
+        existingRun.query.toLowerCase().trim() === query.toLowerCase().trim() &&
+        existingRun.ticker === normalizedTicker &&
+        existingRun.deep === deep) {
+      return existingRun;
+    }
+    // Fallback: search all runs for matching query/ticker/deep
+    for (const [_, run] of this.runs.entries()) {
+      if (run.query.toLowerCase().trim() === query.toLowerCase().trim() &&
+          run.ticker === normalizedTicker &&
+          run.deep === deep) {
+        return run;
+      }
+    }
+    return null;
+  }
+
   async createRun(query: string, ticker?: string, deep: boolean = false): Promise<ResearchRun> {
     this.ensureSeeded();
     const normalizedTicker = ticker || this.inferTickerFromQuery(query) || "TATAMOTORS.NS";
-    // Generate a simple sequential ID format like RUN-01043
-    const runNumber = Math.floor(Math.random() * 99999);
-    const runId = `RUN-${runNumber.toString().padStart(5, "0")}`;
+    
+    // Check if a run already exists for this query/ticker/deep combination
+    const existingRun = this.findExistingRun(query, normalizedTicker, deep);
+    if (existingRun) {
+      return existingRun;
+    }
+    
+    // Generate deterministic ID based on query, ticker, and deep flag
+    const runId = this.generateDeterministicRunId(query, normalizedTicker, deep);
     const createdAt = new Date().toISOString();
 
     const run: ResearchRun = {

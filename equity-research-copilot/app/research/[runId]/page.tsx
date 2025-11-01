@@ -61,24 +61,33 @@ export default function ResearchRunPage() {
         throw new Error("Failed to rehydrate run");
       }
       const newRun = (await response.json()) as ResearchRun;
-      const url = new URL(`/research/${newRun.runId}`, window.location.origin);
-      url.searchParams.set("q", seedQuery);
-      url.searchParams.set("ticker", seedTicker);
-      url.searchParams.set("deep", seedDeep ? "1" : "0");
-      router.replace(url.pathname + url.search);
+      // Only update URL if the runId is different (deterministic IDs should match, but handle edge cases)
+      if (newRun.runId !== runId) {
+        const url = new URL(`/research/${newRun.runId}`, window.location.origin);
+        url.searchParams.set("q", seedQuery);
+        url.searchParams.set("ticker", seedTicker);
+        url.searchParams.set("deep", seedDeep ? "1" : "0");
+        router.replace(url.pathname + url.search);
+      } else {
+        // If IDs match, the run should exist now, set it directly
+        setRun(newRun);
+      }
     } catch (error) {
       console.error("Error rehydrating run:", error);
     } finally {
       setIsRehydrating(false);
     }
-  }, [seedQuery, seedTicker, seedDeep, isRehydrating, router]);
+  }, [seedQuery, seedTicker, seedDeep, isRehydrating, router, runId]);
 
   const fetchRun = useCallback(async () => {
     if (!runId || isRehydrating) return;
     try {
       const res = await fetch(`/api/research/run/${runId}/details`);
       if (res.status === 404) {
-        await rehydrateRun();
+        // Only rehydrate if we have query parameters to recreate the run
+        if (seedQuery && seedTicker) {
+          await rehydrateRun();
+        }
         return;
       }
       if (res.ok) {
@@ -88,7 +97,7 @@ export default function ResearchRunPage() {
     } catch (error) {
       console.error("Error fetching run details:", error);
     }
-  }, [runId, isRehydrating, rehydrateRun]);
+  }, [runId, isRehydrating, rehydrateRun, seedQuery, seedTicker]);
 
   const fetchResults = useCallback(async () => {
     if (!runId) return;
@@ -108,7 +117,10 @@ export default function ResearchRunPage() {
     try {
       const res = await fetch(`/api/research/run/${runId}/status`);
       if (res.status === 404) {
-        await rehydrateRun();
+        // Only rehydrate if we have query parameters to recreate the run
+        if (seedQuery && seedTicker) {
+          await rehydrateRun();
+        }
         return;
       }
       if (res.ok) {
@@ -121,7 +133,7 @@ export default function ResearchRunPage() {
     } catch (error) {
       console.error("Error fetching run status:", error);
     }
-  }, [runId, results, fetchResults, isRehydrating, rehydrateRun]);
+  }, [runId, results, fetchResults, isRehydrating, rehydrateRun, seedQuery, seedTicker]);
 
   const fetchLogs = useCallback(async () => {
     if (!runId) return;
