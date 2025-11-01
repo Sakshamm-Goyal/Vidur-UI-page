@@ -8,7 +8,7 @@ import { ToastProvider } from "@/components/ui/toast";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Aime - Institutional Equity Research Copilot",
+  title: "Vidur Research - Institutional Equity Research Copilot",
   description: "AI-powered equity research platform for institutional analysts",
 };
 

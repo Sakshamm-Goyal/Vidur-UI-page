@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { Search, Command, HelpCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -77,12 +78,18 @@ export function TopNav() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/90 to-indigo-500 text-white shadow-sm">
-              <span className="text-lg font-bold">A</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg overflow-hidden">
+              <Image
+                src="/image.png"
+                alt="Vidur Research Logo"
+                width={36}
+                height={36}
+                className="object-contain"
+              />
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Aime Copilot
+                Vidur Research
               </p>
               <p className="text-sm font-semibold text-foreground">Institutional Equity</p>
             </div>
