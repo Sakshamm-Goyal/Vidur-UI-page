@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mic, ChevronDown, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,10 +11,17 @@ import { cn } from "@/lib/utils";
 interface PromptBarProps {
   onSubmit: (query: string, deepResearch: boolean) => void;
   loading?: boolean;
+  initialQuery?: string;
 }
 
-export function PromptBar({ onSubmit, loading = false }: PromptBarProps) {
-  const [query, setQuery] = useState("");
+export function PromptBar({ onSubmit, loading = false, initialQuery = "" }: PromptBarProps) {
+  const [query, setQuery] = useState(initialQuery);
+
+  useEffect(() => {
+    if (initialQuery) {
+      setQuery(initialQuery);
+    }
+  }, [initialQuery]);
   const [deepResearch, setDeepResearch] = useState(true);
   const [model, setModel] = useState("Auto");
 

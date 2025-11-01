@@ -285,9 +285,9 @@ class FakeResearchService {
   async createRun(query: string, ticker?: string, deep: boolean = false): Promise<ResearchRun> {
     this.ensureSeeded();
     const normalizedTicker = ticker || this.inferTickerFromQuery(query) || "TATAMOTORS.NS";
-    const runId = `RUN-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 999)
-      .toString()
-      .padStart(3, "0")}`;
+    // Generate a simple sequential ID format like RUN-01043
+    const runNumber = Math.floor(Math.random() * 99999);
+    const runId = `RUN-${runNumber.toString().padStart(5, "0")}`;
     const createdAt = new Date().toISOString();
 
     const run: ResearchRun = {

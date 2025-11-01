@@ -257,7 +257,7 @@ export default function ResearchRunPage() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="space-y-2">
                 <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-                  Research Run #{runId?.slice(-6)}
+                  Research Run #{runId?.replace("RUN-", "TR-")}
                 </h1>
                 <p className="text-base text-muted-foreground font-medium">
                   {run?.ticker} • {run?.createdAt ? new Date(run.createdAt).toLocaleString() : "Loading metadata…"}
