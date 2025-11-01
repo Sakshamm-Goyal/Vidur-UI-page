@@ -76,14 +76,15 @@ export function TopNav() {
     <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <div className="flex items-center gap-6">
-          <a href="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <a href="/" className="flex items-center hover:opacity-80 transition-opacity min-w-[180px]">
             <Image
               src="/image.png"
               alt="Vidur Research Logo"
               width={180}
               height={40}
-              className="object-contain h-10 w-auto"
+              className="object-contain h-10 w-auto max-w-[180px]"
               priority
+              unoptimized
             />
           </a>
 
