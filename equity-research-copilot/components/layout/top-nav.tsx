@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Search, Command, HelpCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -74,29 +73,21 @@ export function TopNav() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-white/90 backdrop-blur shadow-sm">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg overflow-hidden">
-              <Image
-                src="/image.png"
-                alt="Vidur Research Logo"
-                width={36}
-                height={36}
-                className="object-contain"
-              />
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Vidur Research
-              </p>
-              <p className="text-sm font-semibold text-foreground">Institutional Equity</p>
-            </div>
-            <Badge className="ml-2 border-primary/40 bg-primary/10 text-primary">Deep Research</Badge>
-          </div>
+          <a href="/" className="flex items-center hover:opacity-80 transition-opacity">
+            <Image
+              src="/image.png"
+              alt="Vidur Research Logo"
+              width={180}
+              height={40}
+              className="object-contain h-10 w-auto"
+              priority
+            />
+          </a>
 
-          <nav className="hidden items-center gap-1 rounded-full border border-border/60 bg-white px-1 py-1 shadow-inner md:flex">
+          <nav className="hidden items-center gap-1 rounded-full border border-slate-200/80 bg-slate-50/50 px-1 py-1 shadow-inner md:flex">
             {navItems.map((item) => {
               const isActive =
                 pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
@@ -105,10 +96,10 @@ export function TopNav() {
                   key={item.label}
                   href={item.href}
                   className={cn(
-                    "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                    "rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200",
                     isActive
-                      ? "bg-primary text-white shadow-sm"
-                      : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                      : "text-slate-600 hover:bg-white hover:text-slate-900"
                   )}
                 >
                   {item.label}
@@ -120,25 +111,25 @@ export function TopNav() {
 
         <div className="flex items-center gap-3">
           <div className="relative hidden w-72 lg:block">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
               ref={searchRef}
               placeholder="Search tickers, companies, teams…"
-              className="h-10 border-border/60 pl-9"
+              className="h-10 border-slate-200/80 bg-white/80 pl-9 text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
             />
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="hidden gap-2 text-xs text-muted-foreground md:flex"
+              className="hidden gap-2 text-xs text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900 md:flex"
               onClick={() => setShortcutsOpen(true)}
             >
               <HelpCircle className="h-3.5 w-3.5" />
               Shortcuts
             </Button>
             <button
-              className="flex h-10 items-center gap-2 rounded-lg border border-border/60 px-3 text-xs font-medium text-muted-foreground hover:bg-muted/40"
+              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200/80 bg-white px-3 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-colors"
               onClick={() => setPaletteOpen(true)}
             >
               <Command className="h-4 w-4" />
@@ -154,24 +145,24 @@ export function TopNav() {
           onClick={() => setPaletteOpen(false)}
         >
           <div
-            className="mt-24 w-full max-w-md overflow-hidden rounded-2xl border border-border/60 bg-background shadow-xl"
+            className="mt-24 w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="border-b border-border/60 px-4 py-3">
-              <p className="text-sm font-semibold text-muted-foreground">Command palette</p>
-              <p className="text-xs text-muted-foreground">
+            <div className="border-b border-slate-200 px-4 py-3">
+              <p className="text-sm font-semibold text-slate-900">Command palette</p>
+              <p className="text-xs text-slate-600">
                 Navigate the copilot or trigger a workflow without leaving the keyboard.
               </p>
             </div>
-            <div className="divide-y divide-border/60">
+            <div className="divide-y divide-slate-200">
               {paletteActions.map((action) => (
                 <button
                   key={action.label}
-                  className="flex w-full items-center justify-between px-4 py-3 text-sm hover:bg-muted/40"
+                  className="flex w-full items-center justify-between px-4 py-3 text-sm text-slate-900 hover:bg-slate-50"
                   onClick={() => triggerAction(action.href)}
                 >
                   <span>{action.label}</span>
-                  <span className="text-xs text-muted-foreground">Go</span>
+                  <span className="text-xs text-slate-500">Go</span>
                 </button>
               ))}
             </div>
@@ -185,12 +176,12 @@ export function TopNav() {
           onClick={() => setShortcutsOpen(false)}
         >
           <div
-            className="mt-24 w-full max-w-md overflow-hidden rounded-2xl border border-border/60 bg-background shadow-xl"
+            className="mt-24 w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="border-b border-border/60 px-4 py-3">
-              <p className="text-sm font-semibold text-muted-foreground">Keyboard shortcuts</p>
-              <p className="text-xs text-muted-foreground">
+            <div className="border-b border-slate-200 px-4 py-3">
+              <p className="text-sm font-semibold text-slate-900">Keyboard shortcuts</p>
+              <p className="text-xs text-slate-600">
                 Optimise your workflow with quick access to key actions.
               </p>
             </div>
@@ -198,10 +189,10 @@ export function TopNav() {
               {shortcutList.map((item) => (
                 <div
                   key={item.combo}
-                  className="flex items-center justify-between rounded-lg border border-border/60 px-3 py-2 text-sm"
+                  className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2 text-sm"
                 >
-                  <span className="text-muted-foreground">{item.description}</span>
-                  <span className="rounded bg-muted px-2 py-1 font-mono text-xs">{item.combo}</span>
+                  <span className="text-slate-700">{item.description}</span>
+                  <span className="rounded bg-slate-100 px-2 py-1 font-mono text-xs text-slate-900">{item.combo}</span>
                 </div>
               ))}
             </div>
