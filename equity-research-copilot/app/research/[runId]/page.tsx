@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   AlertCircle,
   Download,
@@ -32,6 +32,7 @@ export default function ResearchRunPage() {
   const params = useParams();
   const runId = params.runId as string;
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { addToast } = useToastStore();
 
   const [run, setRun] = useState<ResearchRun | null>(null);
@@ -41,11 +42,45 @@ export default function ResearchRunPage() {
   const [tasks, setTasks] = useState<SubAgentTask[]>([]);
   const [selectedTask, setSelectedTask] = useState<SubAgentTask | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [isRehydrating, setIsRehydrating] = useState(false);
+
+  const seedQuery = searchParams.get("q") || undefined;
+  const seedTicker = searchParams.get("ticker") || undefined;
+  const seedDeep = searchParams.get("deep") === "1";
+
+  const rehydrateRun = useCallback(async () => {
+    if (!seedQuery || !seedTicker || isRehydrating) return;
+    try {
+      setIsRehydrating(true);
+      const response = await fetch("/api/research/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: seedQuery, ticker: seedTicker, deep: seedDeep }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to rehydrate run");
+      }
+      const newRun = (await response.json()) as ResearchRun;
+      const url = new URL(`/research/${newRun.runId}`, window.location.origin);
+      url.searchParams.set("q", seedQuery);
+      url.searchParams.set("ticker", seedTicker);
+      url.searchParams.set("deep", seedDeep ? "1" : "0");
+      router.replace(url.pathname + url.search);
+    } catch (error) {
+      console.error("Error rehydrating run:", error);
+    } finally {
+      setIsRehydrating(false);
+    }
+  }, [seedQuery, seedTicker, seedDeep, isRehydrating, router]);
 
   const fetchRun = useCallback(async () => {
-    if (!runId) return;
+    if (!runId || isRehydrating) return;
     try {
       const res = await fetch(`/api/research/run/${runId}/details`);
+      if (res.status === 404) {
+        await rehydrateRun();
+        return;
+      }
       if (res.ok) {
         const data = (await res.json()) as ResearchRun;
         setRun(data);
@@ -53,23 +88,7 @@ export default function ResearchRunPage() {
     } catch (error) {
       console.error("Error fetching run details:", error);
     }
-  }, [runId]);
-
-  const fetchStatus = useCallback(async () => {
-    if (!runId) return;
-    try {
-      const res = await fetch(`/api/research/run/${runId}/status`);
-      if (res.ok) {
-        const data = (await res.json()) as RunStatus;
-        setStatus(data);
-        if (data.overall === "ready" && !results) {
-          fetchResults();
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching run status:", error);
-    }
-  }, [runId, results]);
+  }, [runId, isRehydrating, rehydrateRun]);
 
   const fetchResults = useCallback(async () => {
     if (!runId) return;
@@ -83,6 +102,26 @@ export default function ResearchRunPage() {
       console.error("Error fetching run results:", error);
     }
   }, [runId]);
+
+  const fetchStatus = useCallback(async () => {
+    if (!runId || isRehydrating) return;
+    try {
+      const res = await fetch(`/api/research/run/${runId}/status`);
+      if (res.status === 404) {
+        await rehydrateRun();
+        return;
+      }
+      if (res.ok) {
+        const data = (await res.json()) as RunStatus;
+        setStatus(data);
+        if (data.overall === "ready" && !results) {
+          fetchResults();
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching run status:", error);
+    }
+  }, [runId, results, fetchResults, isRehydrating, rehydrateRun]);
 
   const fetchLogs = useCallback(async () => {
     if (!runId) return;

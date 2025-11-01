@@ -165,7 +165,7 @@ class StockPriceService {
         low: quote.low?.[idx] || quote.close?.[idx] || 0,
         close: quote.close?.[idx] || 0,
         volume: quote.volume?.[idx] || 0,
-      })).filter(point => point.close > 0); // Filter out invalid data points
+      })).filter((point: HistoricalDataPoint) => point.close > 0); // Filter out invalid data points
 
       // Cache the result
       this.historicalCache.set(cacheKey, { data: historicalData, timestamp: Date.now() });
