@@ -84,7 +84,7 @@ export default function HomePage() {
 
         <div className="text-center max-w-5xl mx-auto space-y-8 md:space-y-10 relative z-10">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-blue-200/60 dark:border-blue-500/30 bg-gradient-to-r from-blue-50 via-indigo-50/80 to-blue-50 dark:from-blue-950/40 dark:via-indigo-950/40 dark:to-blue-950/40 text-sm font-semibold text-blue-700 dark:text-blue-300 shadow-sm backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-blue-200/60 dark:border-blue-500/30 bg-gradient-to-r from-blue-50 via-indigo-50/80 to-blue-50 dark:from-blue-950/40 dark:via-indigo-950/40 dark:to-blue-950/40 text-sm font-semibold text-blue-900 dark:text-blue-200 shadow-sm backdrop-blur-sm hover:scale-105 transition-transform duration-300">
             <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse shadow-lg shadow-blue-500/50"></span>
             Powered by Advanced AI Research Models
           </div>
@@ -92,7 +92,7 @@ export default function HomePage() {
           {/* Main Headline */}
           <div className="space-y-4">
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.08]">
-              <span className="text-slate-900 dark:text-slate-100">
+              <span className="text-black dark:text-white">
                 Institutional Equity
               </span>
               <br />
@@ -102,10 +102,10 @@ export default function HomePage() {
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-slate-800 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed px-4">
+            <p className="text-lg md:text-xl text-gray-900 dark:text-gray-100 max-w-3xl mx-auto leading-relaxed px-4">
               Transform 100-hour analyst workflows into 1-2 hours with AI-powered research.
               <br />
-              <span className="font-semibold text-slate-900 dark:text-slate-100">Transparent. Auditable. Institutional-Grade.</span>
+              <span className="font-semibold text-black dark:text-white">Transparent. Auditable. Institutional-Grade.</span>
             </p>
           </div>
 
@@ -113,17 +113,17 @@ export default function HomePage() {
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 pt-4">
             <div className="flex items-center gap-2 text-sm md:text-base">
               <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-slate-900 dark:text-slate-100 font-semibold">127 Data Sources</span>
+              <span className="text-black dark:text-white font-bold">127 Data Sources</span>
             </div>
             <div className="h-4 w-px bg-slate-300 dark:bg-slate-700"></div>
             <div className="flex items-center gap-2 text-sm md:text-base">
               <Zap className="h-4 w-4 text-yellow-600" />
-              <span className="text-slate-900 dark:text-slate-100 font-semibold">100x Faster</span>
+              <span className="text-black dark:text-white font-bold">100x Faster</span>
             </div>
             <div className="h-4 w-px bg-slate-300 dark:bg-slate-700"></div>
             <div className="flex items-center gap-2 text-sm md:text-base">
               <Shield className="h-4 w-4 text-blue-600" />
-              <span className="text-slate-900 dark:text-slate-100 font-semibold">Enterprise Ready</span>
+              <span className="text-black dark:text-white font-bold">Enterprise Ready</span>
             </div>
           </div>
 
@@ -134,7 +134,7 @@ export default function HomePage() {
 
           {/* Sample Queries */}
           <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 pt-6">
-            <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 w-full sm:w-auto">Try asking:</span>
+            <span className="text-sm font-bold text-black dark:text-white w-full sm:w-auto">Try asking:</span>
             {sampleQueries.map((sample, idx) => {
               const Icon = sample.icon;
               return (
@@ -159,7 +159,7 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-4">
               Why Choose Vidur Research?
             </h2>
-            <p className="text-lg text-slate-800 dark:text-slate-200 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-900 dark:text-gray-100 max-w-2xl mx-auto">
               Built for institutional analysts who demand speed, accuracy, and complete transparency
             </p>
           </div>

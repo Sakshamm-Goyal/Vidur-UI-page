@@ -738,12 +738,28 @@ class FakeResearchService {
       }
     }
 
-    // Calculate real returns from price series data
-    const calculateReturn = (daysAgo: number): number => {
-      if (priceSeries.length < daysAgo) return getDeterministicValue(`${seed}-chg-${daysAgo}`, -0.05, 0.1);
+    // Calculate real returns from price series data with realistic bounds
+    const calculateReturn = (daysAgo: number, minReturn?: number, maxReturn?: number): number => {
+      if (priceSeries.length < daysAgo) {
+        const defaultMin = minReturn ?? -0.5;
+        const defaultMax = maxReturn ?? 1.0;
+        return getDeterministicValue(`${seed}-chg-${daysAgo}`, defaultMin, defaultMax);
+      }
       const currentPrice = priceSeries[priceSeries.length - 1].c;
       const pastPrice = priceSeries[priceSeries.length - daysAgo]?.c || currentPrice;
-      return (currentPrice - pastPrice) / pastPrice;
+      let returnValue = (currentPrice - pastPrice) / pastPrice;
+      
+      // Clamp to realistic ranges based on time period
+      if (minReturn !== undefined || maxReturn !== undefined) {
+        const min = minReturn ?? -0.99; // Cap at -99% to prevent -100%
+        const max = maxReturn ?? 10.0; // Allow up to 1000% for very long periods
+        returnValue = Math.max(min, Math.min(max, returnValue));
+      } else {
+        // Default bounds to prevent extreme values
+        returnValue = Math.max(-0.99, Math.min(10.0, returnValue));
+      }
+      
+      return returnValue;
     };
 
     const results: ResearchResults = {
@@ -760,11 +776,22 @@ class FakeResearchService {
         currentPrice: realPrice,
         currency: currency,
         changes: {
-          "1D": calculateReturn(1),
-          "1W": calculateReturn(5),
-          "1M": calculateReturn(21),
-          "1Y": calculateReturn(252),
-          "5Y": priceSeries.length >= 1260 ? calculateReturn(1260) : getDeterministicValue(`${seed}-chg-5y`, 0.48, 1.24),
+          "1D": calculateReturn(1, -0.1, 0.1),
+          "1W": calculateReturn(5, -0.15, 0.15),
+          "1M": calculateReturn(21, -0.3, 0.3),
+          "1Y": calculateReturn(252, -0.6, 1.0),
+          "5Y": (() => {
+            // For 5Y, use deterministic value to ensure realistic returns
+            // Realistic 5Y returns: -50% to +200% (some stocks can have extreme moves)
+            const fiveYearReturn = getDeterministicValue(`${seed}-chg-5y`, -0.5, 2.0);
+            // If price series has enough data, validate against it but clamp to realistic range
+            if (priceSeries.length >= 1260) {
+              const calculated = calculateReturn(1260, -0.5, 2.0);
+              // Use calculated value only if it's in reasonable range, otherwise use deterministic
+              return (calculated >= -0.5 && calculated <= 2.0) ? calculated : fiveYearReturn;
+            }
+            return fiveYearReturn;
+          })(),
         },
       },
       kpis: {
@@ -781,11 +808,18 @@ class FakeResearchService {
 
           return realPrice * (1 + baseUpside);
         })(),
-        ret_1m: calculateReturn(21),
-        ret_3m: calculateReturn(63),
-        ret_6m: calculateReturn(126),
-        ret_1y: calculateReturn(252),
-        ret_3y: priceSeries.length >= 756 ? calculateReturn(756) : getDeterministicValue(`${seed}-ret-3y`, 0.04, 0.54),
+        ret_1m: calculateReturn(21, -0.3, 0.3),
+        ret_3m: calculateReturn(63, -0.4, 0.5),
+        ret_6m: calculateReturn(126, -0.5, 0.7),
+        ret_1y: calculateReturn(252, -0.6, 1.0),
+        ret_3y: (() => {
+          const threeYearReturn = getDeterministicValue(`${seed}-ret-3y`, -0.4, 1.5);
+          if (priceSeries.length >= 756) {
+            const calculated = calculateReturn(756, -0.4, 1.5);
+            return (calculated >= -0.4 && calculated <= 1.5) ? calculated : threeYearReturn;
+          }
+          return threeYearReturn;
+        })(),
         cagr_5y: getDeterministicValue(`${seed}-cagr-5y`, 0.08, 0.19),
         max_dd_5y: Math.min(
           ...drawdownSeries.map(d => d.dd),
